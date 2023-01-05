@@ -1,0 +1,12 @@
+@import "./custom.scss"; //自定义scss
+.active-form {
+  .u-radio-group--row, .u-checkbox-group--row {
+	flex-wrap: wrap;
+  }
+  
+  .u-radio, .u-checkbox {
+	margin: 10rpx;
+  }
+}
+
+
