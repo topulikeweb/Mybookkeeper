@@ -1,24 +1,19 @@
 {
-  "id": "buuug7-simple-datetime-picker",
-  "displayName": "简单的日期时间选择器",
-  "version": "0.5.0",
-  "description": "uniApp 简单的日期时间选择器, 可选择年, 月, 日, 时, 分",
+  "id": "v-tabs",
+  "displayName": "自定义 tab 选项卡 2",
+  "version": "2.1.1",
+  "description": "自定义 tab ，支持多种样式，支持 h5 小程序 app",
   "keywords": [
-    "时间",
-    "日期",
-    "时间选择器",
-    "日期时间选择器",
-    "datetime"
+    "v-tabs",
+    "tab",
+    "选项卡"
 ],
-  "repository": "",
+  "repository": "https://github.com/xfjpeter/uni-plugins",
   "engines": {
     "HBuilderX": "^3.1.0"
   },
   "dcloudext": {
-    "category": [
-        "前端组件",
-        "通用组件"
-    ],
+    "type": "component-vue",
     "sale": {
       "regular": {
         "price": "0.00"
@@ -28,7 +23,7 @@
       }
     },
     "contact": {
-      "qq": "3190136675"
+      "qq": "1207791534"
     },
     "declaration": {
       "ads": "无",
@@ -46,9 +41,13 @@
         "aliyun": "y"
       },
       "client": {
+        "Vue": {
+          "vue2": "y",
+          "vue3": "n"
+        },
         "App": {
           "app-vue": "y",
-          "app-nvue": "u"
+          "app-nvue": "n"
         },
         "H5-mobile": {
           "Safari": "y",
@@ -65,10 +64,14 @@
         },
         "小程序": {
           "微信": "y",
-          "阿里": "u",
-          "百度": "u",
-          "字节跳动": "u",
-          "QQ": "u"
+          "阿里": "y",
+          "百度": "y",
+          "字节跳动": "y",
+          "QQ": "y",
+          "钉钉": "y",
+          "快手": "y",
+          "飞书": "y",
+          "京东": "y"
         },
         "快应用": {
           "华为": "u",

@@ -26,7 +26,7 @@
         <li>买东西 -20.00</li>
       </view>
       <!--    记一笔按钮-->
-      <view class="makeAccount">
+      <view class="makeAccount" @click="makeAccount">
         记一笔
       </view>
     </view>
@@ -39,6 +39,13 @@ export default {
   data () {
     return {
       imageUrl: "https://i1.shaodiyejin.com/uploads/tu/201905/9999/4ada68c934.jpg"
+    }
+  },
+  methods: {
+    makeAccount () {
+      uni.navigateTo({
+        url: '/subpkg/billing_page/billing_page'
+      })
     }
   }
 }

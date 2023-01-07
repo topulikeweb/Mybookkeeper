@@ -2,11 +2,12 @@
   <view>
     <!--    金额-->
     <view class="container1">
-      <uni-forms ref="form" :modelValue="formData" :rules="rules">
-        <uni-forms-item label="金额  :" name="name" id="uni-forms">
+      <uni-forms ref="form" :modelValue="formData" :rules="rules"
+                 label-position="left">
+        <uni-forms-item label="金额" name="money" required>
           <input type="number" v-model="formData.money"
                  placeholder="请输入金额"
-                 style="height: 100rpx;font-size: 33rpx;line-height: 100rpx;margin:auto"/>
+                 style="height: 100rpx;font-size: 30rpx;line-height: 100rpx;position: relative;margin-right: 0rpx"/>
         </uni-forms-item>
       </uni-forms>
     </view>
@@ -16,16 +17,16 @@
       <view class="cate ">类别 :</view>
 
       <dropdown :list="list" @onClick="dropDownChange" :current="dropCurrent"
-                style="width:200rpx;position:relative;left: 500rpx"></dropdown>
+                style="width:500rpx;position:relative;left: 500rpx"></dropdown>
     </view>
 
     <view class="container3">
       <!--    日期选择-->
-      <view style="font-size: 33rpx">
+      <view style="font-size: 33rpx;margin-left:50rpx ">
         日期 :
       </view>
-      <button type="default" @click="openDatetimePicker"
-              style="width: 70%;height: 70rpx;background-color: #f5bf74;color: #eee8e8;line-height: 70rpx;position: relative ;left: 300rpx ">
+      <button type="default" @click="openDatetimePicker" class="btnDate" style=" width: 50%;
+  height: 70rpx;">
         {{ defaultDate }}
       </button>
       <SimpleDateTimePicker
@@ -73,9 +74,7 @@ export default {
   methods: {
     // 保存按钮
     submit () {
-      uni.$showMsg({
-        title: '保存成功'
-      });
+      uni.$showMsg('保存成功')
     },
     // 数据选择框,选择就会触发函数
     dropDownChange (value) {
@@ -102,72 +101,77 @@ export default {
 </script>
 
 <style scoped>
+::v-deep .btnDate {
+  background-color: #f5bf74;
+  color: #eee8e8;
+  line-height: 70rpx;
+  position: absolute;
+  left: 300rpx;
+  z-index: 2;
+}
+
 .container2 {
-  width: 500rpx;
+  height: 400rpx;
+  width: 100%;
   position: relative;
   top: 200rpx;
-  left: -100rpx;
+  border-bottom: #aba9a9 1px solid;
+  border-top: #aba9a9 1px solid;
+  display: flex;
+  justify-content: space-between;
 }
 
 .container3 {
+  margin-top: 50rpx;
   width: 100%;
-  left: -100rpx;
   position: relative;
   top: 300rpx;
+  border-bottom: #aba9a9 1px solid;
 }
-.container1{
-  width: 100%;
-  left: -20rpx;
+
+.container1 {
+  left: -70rpx;
   position: relative;
   top: 30rpx;
-}
-.form {
-  position: relative;
-  top: 400rpx;
+  margin: auto;
 }
 
 ::v-deep .data-v-f7d69ff8 {
-  width: 80%;
-  height: 100rpx;
+  width: 100%; /*有改动*/
+  height: 130rpx;
   position: absolute;
-  right: 0px;
+  right: 0;
   /*border-bottom: 1px #706f6f solid;*/
 }
 
 .btn {
   width: 50%;
   height: 100rpx;
-  margin-top:600rpx ;
+  margin-top: 700rpx;
   position: absolute;
-  left: 0rpx;
+  left: 0;
   background-color: #007aff;
 }
 
 ::v-deep text {
-  position: absolute;
-  top: 40rpx;
+  position: relative;
+  top: 10rpx;
   font-size: 30rpx;
-  /*color: #4cd964;*/
   color: black;
-  width: 100rpx;
   height: 50rpx;
   line-height: 50rpx;
-}
-
-.uni-select {
-  font-size: 40px;
-}
-
-.container {
-
 }
 
 .cate {
   position: absolute;
 }
-
-::v-deep .dropWrap.data-v-30fce8e2 {
-  width: 60%;
-}
-
+/*::v-deep text{*/
+/*  !*margin-left: 20rpx;*!*/
+/*  position: absolute;*/
+/*  left: -20rpx;*/
+/*}*/
+/*::v-deep .uni-forms-item__content{*/
+/*  position: absolute;*/
+/*  left: -20rpx;*/
+/*}*/
 </style>
