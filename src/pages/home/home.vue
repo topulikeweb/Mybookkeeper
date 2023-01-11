@@ -26,9 +26,9 @@
         <li>买东西 -20.00</li>
       </view>
       <!--    记一笔按钮-->
-      <view class="makeAccount" @click="makeAccount">
+      <button type="primary" class="makeAccount" @click="makeAccount">
         记一笔
-      </view>
+      </button>
     </view>
   </view>
 </template>
@@ -63,7 +63,7 @@ export default {
   width: 100%;
   height: 200rpx;
   position: absolute;
-  bottom: 0rpx;
+  bottom: 0;
   display: flex;
 
 }
@@ -98,12 +98,12 @@ export default {
   position: absolute;
   right: 10rpx;
   bottom: 10rpx;
-  color: white;
+  color:  #e3dfdf;
   font-weight: 100;
 }
 
 .bottom-box {
-  background-color: #dadaf8;
+  background-color:#ffffff;
   width: 100%;
   height: 57%;
   position: relative;
@@ -111,16 +111,16 @@ export default {
 }
 
 .makeAccount {
-  width: 250rpx;
-  height: 250rpx;
-  background-color: #9f56b0;
+  width: 80%;
+  height: 100rpx;
+  background-color: #f8dc2d;
   position: absolute;
-  top: 55%;
-  left: 33%;
-  border-radius: 250rpx;
-  font-size: 50rpx;
-  line-height: 250rpx;
+  font-size: 46rpx;
+  font-weight: 500;
+  color: #0d0a0e;
+  line-height: 100rpx;
   text-align: center;
+  left: 10%;
 }
 
 .big-box {
@@ -136,7 +136,7 @@ body {
   width: 90%;
   height: 50%;
   margin: 20rpx auto;
-  background-color: #d3d1d1;
+  background-color: #ffffff;
   border-radius: 15px;
 }
 
@@ -153,7 +153,7 @@ body {
   height: 20%;
   width: 90%;
   font-weight: 300;
-  border-bottom: 1px solid #989797;
+  border-bottom: 1px solid #e0dfdf;
   line-height: 280%;
 }
 </style>

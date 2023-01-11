@@ -1,6 +1,7 @@
 {
   "easycom": {
     "autoscan": true,
+    "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue",
     "custom": {
       // uni-ui 规则如下配置
       "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
@@ -32,7 +33,7 @@
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "my-bookkeeper",
-    "navigationBarBackgroundColor": "#F8F8F8",
+    "navigationBarBackgroundColor": "#2855fc",
     "backgroundColor": "#F8F8F8"
   },
   "subPackages": [
@@ -42,7 +43,7 @@
         {
           "path": "billing_page/billing_page",
           "style": {
-            "navigationBarTitleText": "",
+            "navigationBarTitleText": "记一笔",
             "enablePullDownRefresh": false
           }
         }
