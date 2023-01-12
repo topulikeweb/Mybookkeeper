@@ -4,6 +4,7 @@ import App from './App'
 import dropdown from 'components/dt-dropdown/dt-dropdown'
 import store from 'store/store'
 
+
 Vue.component('dropdown', dropdown)
 
 Vue.prototype.$store = store
