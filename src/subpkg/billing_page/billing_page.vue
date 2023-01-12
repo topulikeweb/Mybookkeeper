@@ -275,7 +275,9 @@ export default {
       uni.showLoading({
         title: '数据加载中'
       })
+      // 将本次提交账单状态设置为收入
       this.costForm.flag = 1
+      // 点击后进行的回调函数
       this.$refs.iForm.validate().then(res => {
         uni.$showMsg('保存成功', 2000)
         // TODO 后端接口和上述一样（把表单信息传给后端）

@@ -23,19 +23,23 @@
       </view>
     </view>
 
-    <uni-list-chat :title="item.SpendMoney"
-                   :avatar="imageUrl[item.flag]"
-                   :note="item.remark"
-                   badge-positon="left" v-for="(item,key) in fSpendList"
-                   :key="key">
-      <view class="chat-custom-right">
-        <text class="chat-custom-text">{{ item.calendar }}</text>
-        <!-- 需要使用 uni-icons 请自行引入 -->
-        <uni-icons type="smallcircle-filled" :color="color[item.flag]"
-                   size="25"></uni-icons>
-      </view>
-    </uni-list-chat>
-
+    <!--    滑块-->
+    <uni-swipe-action-item :right-options="options"
+                           @click="onClick(key)"
+                           v-for="(item,key) in spendList" :key="key">
+      <!--      列表-->
+      <uni-list-chat :title="item.SpendMoney"
+                     :avatar="imageUrl[item.flag]"
+                     :note="item.remark"
+                     badge-positon="left">
+        <view class="chat-custom-right">
+          <text class="chat-custom-text">{{ item.calendar }}</text>
+          <!-- 需要使用 uni-icons 请自行引入 -->
+          <uni-icons type="smallcircle-filled" :color="color[item.flag]"
+                     size="25"></uni-icons>
+        </view>
+      </uni-list-chat>
+    </uni-swipe-action-item>
   </view>
 </template>
 
@@ -47,25 +51,14 @@ import { mapMutations } from 'vuex'
 export default {
   /** TODO 本页面需要完成的：
    * 1：请求到用户所有的记账信息
-   * 2：根据用户的选择账单的时间和类型进行列表的筛选
+   * 2: 删除对应的li
+   * 3：根据用户的选择账单的时间和类型进行列表的筛选
    */
   name: "statistics",
   data () {
     return {
-      // 假数据
-      fSpendList: [{
-        calendar: '2021 - 10 - 02',
-        SpendMoney: '12',
-        flag: 1,
-        remark: '成都市郫都区红光镇',
-        spendType: '买东西'
-      }, {
-        calendar: '2021 - 10 - 02',
-        SpendMoney: '14',
-        flag: 0,
-        remark: '成都市郫都区红光镇',
-        spendType: '买东西'
-      }],
+      // 请过来的数组
+      spendList: [],
       value: 0,
       // 月份列表
       timeRange: [
@@ -91,19 +84,28 @@ export default {
       //  收入支出图片的链接(第一个是收入)
       imageUrl: ['https://s2.loli.net/2023/01/11/KVlBmiPErIUR2Gk.png',
         'https://s2.loli.net/2023/01/11/XaTEfy9kePlYNSr.png'],
-      color: ['red', 'green']
+      color: ['red', 'green'],
+      // 滑块选择框
+      options: [
+        {
+          text: '删除',
+          style: {
+            backgroundColor: '#dd524d'
+          }
+        }
+      ],
     };
   },
   computed: {
     ...mapState('m_list', ['timeList']),
-    ...mapState('m_list', ['spendList'])
   },
   methods: {
     ...mapMutations('m_list', ['setTimeList']),
     ...mapMutations('m_list', ['updateSpendList']),
     changeMouth (e) {
       this.theResult.mouthResult = this.timeRange[e]
-      //text: "全部"
+      // console.log():
+      // text: "全部"
       // value: 0
     },
     changeType (e) {
@@ -117,11 +119,52 @@ export default {
         obj.text = this.timeList[i]
         this.timeRange.push(obj)
       }
-      // console.log(this.timeRange)
+    },
+
+    // 点击滑块的删除按钮,删除对应的li
+    onClick (key) {
+      // TODO 删除的接口
+
+
+      // 删除过后重新获取数据
+      this.getSpendList()
+      // 刷新页面
+      uni.redirectTo({
+        url: '/pages/statistics/statistics'
+      })
+
+      // let TheDeleteSpendList = this.spendList.splice(key, 1)
+      // 将删除后的spendList保存到本地
+      // this.updateSpendList(t)
+    },
+
+    getSpendList () {
+      // TODO 这有一个后端接口函数，后端接口给spendList进行赋值（并将spendList存入本地）
+      this.spendList = [{
+        calendar: '2021 - 10 - 02',
+        SpendMoney: '12',
+        flag: 1,
+        remark: '成都市郫都区红光镇',
+        spendType: '买东西'
+      }, {
+        calendar: '2021 - 10 - 02',
+        SpendMoney: '14',
+        flag: 0,
+        remark: '成都市郫都区红光镇',
+        spendType: '买东西'
+      },
+        {
+          calendar: '2021 - 10 - 02',
+          SpendMoney: '14',
+          flag: 0,
+          remark: '成都市郫都区红光镇',
+          spendType: '买东西'
+        }]
+      this.updateSpendList(this.spendList)
     },
   },
   created () {
-    this.updateSpendList(this.fSpendList)
+    this.getSpendList()
     this.addTimeRange()
   }
 }
