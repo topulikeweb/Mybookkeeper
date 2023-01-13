@@ -145,20 +145,20 @@ export default {
         SpendMoney: '12',
         flag: 1,
         remark: '成都市郫都区红光镇',
-        spendType: '买东西'
+        spendType: '出行'
       }, {
-        calendar: '2021 - 10 - 02',
+        calendar: '2021 - 01 - 02',
         SpendMoney: '14',
         flag: 0,
         remark: '成都市郫都区红光镇',
-        spendType: '买东西'
+        spendType: '购物'
       },
         {
-          calendar: '2021 - 10 - 02',
+          calendar: '2023 - 10 - 02',
           SpendMoney: '14',
           flag: 0,
           remark: '成都市郫都区红光镇',
-          spendType: '买东西'
+          spendType: '学习'
         }]
       this.updateSpendList(this.spendList)
     },
