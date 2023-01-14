@@ -303,6 +303,12 @@ export default {
           this.setTimeList()
         }
       }
+      uni.redirectTo({
+        url: '/pages/statistics/statistics'
+      })
+      uni.redirectTo({
+        url: '/pages/chart/chart'
+      })
     }
   },
   created () {

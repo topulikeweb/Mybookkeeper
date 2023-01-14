@@ -14,6 +14,12 @@ export default {
     setSpendList (state) {
       uni.setStorageSync('spendList', JSON.stringify(state.spendList))
     },
+    // 更新时间列表
+    updateTimeList (state, timeList) {
+      state.timeList = timeList
+      this.commit('m_list/setTimeList')
+    },
+    // 更新总账单列表
     updateSpendList (state, spendList) {
       state.spendList = spendList
       this.commit('m_list/setSpendList')

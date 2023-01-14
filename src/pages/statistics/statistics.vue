@@ -102,6 +102,7 @@ export default {
   methods: {
     ...mapMutations('m_list', ['setTimeList']),
     ...mapMutations('m_list', ['updateSpendList']),
+    ...mapMutations('m_list', ['updateTimeList']),
     changeMouth (e) {
       this.theResult.mouthResult = this.timeRange[e]
       // console.log():
@@ -113,6 +114,8 @@ export default {
     },
     // 将timeList的时间以键值对的形式添加到timeRange中
     addTimeRange () {
+      // 先对记账时间进行排序
+      this.sortTime()
       for (let i = 0; i < this.timeList.length; i++) {
         let obj = {}
         obj.value = i
@@ -120,7 +123,16 @@ export default {
         this.timeRange.push(obj)
       }
     },
-
+    // 给记账时间进行排序
+    sortTime () {
+      // 将时间转换为毫秒来比较进行排序
+      this.timeList.sort((a, b) => {
+        return Date.parse(b) - Date.parse(a)
+      })
+      // 将排好序的timeList保存进本地
+      this.updateTimeList(this.timeList)
+      console.log(12312, this.timeList)
+    },
     // 点击滑块的删除按钮,删除对应的li
     onClick (key) {
       // TODO 删除的接口
@@ -138,35 +150,41 @@ export default {
       // this.updateSpendList(t)
     },
 
+    /**
+     * 获取总账单列表
+     */
     getSpendList () {
       // TODO 这有一个后端接口函数，后端接口给spendList进行赋值（并将spendList存入本地）
       this.spendList = [{
-        calendar: '2021 - 10 - 02',
+        calendar: '2022 - 10 - 02',
         SpendMoney: '12',
         flag: 1,
         remark: '成都市郫都区红光镇',
         spendType: '出行'
       }, {
-        calendar: '2021 - 01 - 02',
+        calendar: '2023 - 01 - 02',
         SpendMoney: '14',
         flag: 0,
         remark: '成都市郫都区红光镇',
-        spendType: '购物'
+        spendType: '日用品'
       },
         {
-          calendar: '2023 - 10 - 02',
+          calendar: '2022 - 10 - 02',
           SpendMoney: '14',
           flag: 0,
           remark: '成都市郫都区红光镇',
           spendType: '学习'
         }]
       this.updateSpendList(this.spendList)
+      uni.redirectTo({
+        url: '/subpkg/billing_page/billing_page'
+      })
     },
   },
-  created () {
+  onReady () {
     this.getSpendList()
     this.addTimeRange()
-  }
+  },
 }
 </script>
 

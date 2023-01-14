@@ -4,34 +4,47 @@
     <v-tabs v-model="current" :tabs="tabs" @change="changeTab"
             :scroll="false"></v-tabs>
 
-    <swiper :current="current">
-      <!--        月份下拉框-->
-      <view>
-        <hpy-form-select :dataList="mouthRange" text="text" name="value"
-                         v-model="mouthValue" islot="true"
-                         @change="mouthChange">
-          <view class="my-select">{{ mouthText }}</view>
-        </hpy-form-select>
-      </view>
-      <swiper-item>
+    <swiper :current="current" class="swiper">
+      <swiper-item class="swiper">
+        <!--        折线图-->
+        <view class="charts-box">
+          <!--        月份下拉框-->
+          <view>
+            <hpy-form-select :dataList="monthRange" text="text" name="value"
+                             v-model="monthValue" islot="true"
+                             @change="monthChange">
+              <view class="my-select">{{ monthText }}</view>
+            </hpy-form-select>
+          </view>
+          <qiun-data-charts
+              type="line"
+              :opts="MonthOpts"
+              :chartData="monthChartData"
+          />
+        </view>
+        <view class="charts-box">
+          <!--        扇形图-->
+          <qiun-data-charts
+              type="pie"
+              :opts="monthFanOpts"
+              :chartData="fanChartData"
+              :canvas2d="false"
+              canvas-id="hello"
+          />
+        </view>
+      </swiper-item>
+
+      <!--      年图表-->
+      <swiper-item class="swiper">
         <!--    折线图-->
         <view class="charts-box">
           <qiun-data-charts
               type="line"
-              :opts="lineOpts"
-              :chartData="chartData"
-              :canvas2d="true"
+              :opts="yearLineOpts"
+              :chartData="yearChatData"
+              :canvas2d="false"
+              :ontouch="false"
               canvas-id="world"
-          />
-        </view>
-        <!--        扇形图-->
-        <view class="charts-box">
-          <qiun-data-charts
-              type="pie"
-              :opts="fanOpts"
-              :chartData="fanChartData"
-              :canvas2d="true"
-              canvas-id="hello"
           />
         </view>
       </swiper-item>
@@ -46,25 +59,33 @@ export default {
   data () {
     return {
       // 月份下拉框
-      mouthValue: 0,
-      mouthText: '',
-      mouth: '',
+      monthValue: 0,
+      monthText: '',
+      month: '',
       // 消费月份的列表(默认为列表第一个)
-      mouthRange: [],
+      monthRange: [],
       // tab栏的数值
       current: 0,
       // tab栏的选项
       tabs: ['月', '年'],
-      // 消费金额数组
+      // 年消费金额数组
       spendMoneyArray: [],
-      // 收金额数组
+      monthSpendMoneyArray: [],
+      // 折线图的横坐标的数组
+      monthCalendarArray: [],
+      // 年收如金额数组
       incomeMoneyArray: [],
+      monthIncomeMoneyArray: [],
       // 时间数组（x轴）
       calendarArray: [],
-      chartData: {},
+      // 月折线图的数据
+      monthChartData: {},
+      // 年折线图的数据
+      yearChatData: {},
+      // 月扇形图的数据
       fanChartData: {},
       fanDataObj: [],
-      lineOpts: {
+      yearLineOpts: {
         color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
         padding: [15, 10, 0, 15],
         enableScroll: false,
@@ -84,7 +105,7 @@ export default {
           }
         }
       },
-      fanOpts: {
+      monthFanOpts: {
         color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
         padding: [5, 5, 5, 5],
         enableScroll: false,
@@ -99,8 +120,28 @@ export default {
             borderColor: "#FFFFFF"
           }
         }
+      },
+      monthOpts: {
+        color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
+        padding: [15, 10, 0, 15],
+        enableScroll: false,
+        legend: {},
+        xAxis: {
+          disableGrid: true
+        },
+        yAxis: {
+          gridType: "dash",
+          dashLength: 2
+        },
+        extra: {
+          line: {
+            type: "straight",
+            width: 2,
+            activeType: "hollow"
+          }
+        }
       }
-    };
+    }
   },
   onReady () {
     // 获取所有账单的月份
@@ -112,7 +153,9 @@ export default {
     // 获取现今的年月
     this.getCalendar()
     // 获取扇形图的数据
-    this.getFanMouthData()
+    this.getFanMonthData()
+    // 获取月消费数据的数组
+    this.getMonthMoneyArray()
   },
   computed: {
     ...mapState('m_list', ['spendList']),
@@ -122,45 +165,57 @@ export default {
     getServerData () {
       //模拟从服务器获取数据时的延时(这里就用后端接口了，页面处理逻辑就行)
       setTimeout(() => {
-            let res = {
-              categories: this.calendarArray,
-              series: [
-                {
-                  name: "消费",
-                  data: this.spendMoneyArray
-                },
-                {
-                  name: "收入",
-                  data: this.incomeMoneyArray
-                }
-              ]
-            };
-            // 扇形图的数据
-            let fanRes = {
-              series: [
-                {
-                  data: this.fanDataObj
-                }
-              ]
-            };
-            this.fanChartData = JSON.parse(JSON.stringify(fanRes));
-            this.chartData = JSON.parse(JSON.stringify(res));
-          }, 100
-      )
-      ;
+        let res = {
+          categories: this.calendarArray,
+          series: [
+            {
+              name: "消费",
+              data: this.spendMoneyArray
+            },
+            {
+              name: "收入",
+              data: this.incomeMoneyArray
+            }
+          ]
+        };
+        // 扇形图的数据
+        let fanRes = {
+          series: [
+            {
+              data: this.fanDataObj
+            }
+          ]
+        };
+        let monthRes = {
+          categories: this.monthCalendarArray,
+          series: [
+            {
+              name: "支出",
+              data: this.monthSpendMoneyArray
+            },
+            {
+              name: "收入",
+              data: this.monthIncomeMoneyArray
+            },
+          ]
+        };
+        this.monthChartData = JSON.parse(JSON.stringify(monthRes));
+        this.fanChartData = JSON.parse(JSON.stringify(fanRes));
+        this.yearChatData = JSON.parse(JSON.stringify(res));
+      }, 100);
     },
 
-// 获取记账列表中消费和收入的金额，将其分别组成一个数组提供给折线图
+// （年）获取记账列表中消费和收入的金额，将其分别组成一个数组提供给折线图
     getMoneyArray () {
       this.spendMoneyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       this.spendList.forEach(item => {
-        let calendar_mouth = item.calendar.substring(10, 6).trim()
-        // console.log(12, calendar_mouth)
+        let calendar_month = item.calendar.substring(10, 6).trim()
+        // console.log(12, calendar_month)
         if (item.flag === 0) {
           // 强制转换为数字
           item.SpendMoney = parseInt(item.SpendMoney)
           // 根据月份来进行加减
-          switch (calendar_mouth) {
+          switch (calendar_month) {
             case '01':
               this.spendMoneyArray[0] = item.SpendMoney + this.spendMoneyArray[0]
               break;
@@ -203,13 +258,13 @@ export default {
       // 获取收入金额数组
       this.incomeMoneyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       this.spendList.forEach(item => {
-        let calendar_mouth = item.calendar.substring(10, 6).trim()
-        // console.log(12, calendar_mouth)
+        let calendar_month = item.calendar.substring(10, 6).trim()
+        // console.log(12, calendar_month)
         if (item.flag === 1) {
           // 强制转换为数字
           item.SpendMoney = parseInt(item.SpendMoney)
-          // 根据月份来进行加减
-          switch (calendar_mouth) {
+          // 根据消费月份来进行相同月份账单的求和
+          switch (calendar_month) {
             case '01':
               this.incomeMoneyArray[0] = item.SpendMoney + this.incomeMoneyArray[0]
               break;
@@ -250,86 +305,139 @@ export default {
         }
       })
     },
+    /**
+     * 获取月份折线图收入和消费的横纵坐标
+     */
+    getMonthMoneyArray () {
+      // 得到一个长度为31，且全为0的数组
+      this.monthSpendMoneyArray = new Array(31).fill(0)
+      this.monthIncomeMoneyArray = new Array(31).fill(0)
+      this.monthCalendarArray = new Array(31).fill('~')
+      this.monthCalendarArray[5] = 5
+      this.monthCalendarArray[15] = 15
+      this.monthCalendarArray[25] = 25
+      let data = new Date()
+      let year = data.getFullYear()
+      this.spendList.forEach(item => {
+        console.log(parseInt(item.calendar.split('-')))
+        // 因为这里只展示每个月的数据，因此，只展示今年的每个月的数据，要排除开前几年的数据
+        if (parseInt(item.calendar.split('-')) === year) {
+          // 判断为消费
+          if (item.flag === 0) {
+            if (parseInt(item.calendar.substring(10, 6).trim()) === parseInt(this.monthText.substring(7, 5).trim())) {
+              // 将天数作为索引
+              let index = parseInt(item.calendar.split(' - ')[2])
+              this.monthSpendMoneyArray[index] = this.monthSpendMoneyArray[index] + item.SpendMoney
+            }
+          } else {// 判断为收入
+            if (parseInt(item.calendar.substring(10, 6).trim()) === parseInt(this.monthText.substring(7, 5).trim())) {
+              // 将天数作为索引
+              let index = parseInt(item.calendar.split(' - ')[2])
+              this.monthIncomeMoneyArray[index] = this.monthIncomeMoneyArray[index] + item.SpendMoney
+            }
+          }
+        }
+      })
+    },
 // 获取现在到后5个月的月份，渲染到x轴
     getCalendar () {
       this.calendarArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     }
     ,
+    // 改变tab栏，将swiper的索引一起修改
     changeTab (index) {
       console.log('当前选择的是', index)
-    },
+    }
+    ,
     // 获取某个月的消费扇形图
-    getFanMouthData () {
+    getFanMonthData () {
+      let data = new Date()
+      let year = data.getFullYear()
       let fanData = [0, 0, 0, 0, 0, 0]
       this.spendList.forEach(item => {
-        let changeMouth = item.calendar.substring(10, 6).trim()
-        // 如果月份前面有0就去掉0
-        if (changeMouth[0] === '0') {
-          changeMouth = changeMouth[1]
-        }
-        // 如果月份和选择的月份相同，才进行加减
-        if (changeMouth + '月' === this.mouthText) {
-          switch (item.spendType) {
-            case '餐饮':
-              fanData[0] = fanData[0] + item.SpendMoney
-              break;
-            case '出行':
-              fanData[1] = fanData[1] + item.SpendMoney
-              break;
-            case '娱乐':
-              fanData[2] = fanData[2] + item.SpendMoney
-              break;
-            case '学习':
-              fanData[3] = fanData[3] + item.SpendMoney
-              break;
-            case '日用品':
-              fanData[4] = fanData[4] + item.SpendMoney
-              break;
-            case '其他':
-              fanData[5] = fanData[5] + item.SpendMoney
-              break;
+        if (item.flag === 0) {
+          if (parseInt(item.calendar.split('-')) === year) {
+            let changeMonth = item.calendar.substring(10, 6).trim()
+            // 如果月份和选择的月份相同，才进行加减
+            if (changeMonth === this.monthText.substring(7, 5).trim()) {
+              switch (item.spendType) {
+                case '餐饮':
+                  fanData[0] = fanData[0] + item.SpendMoney
+                  break;
+                case '出行':
+                  fanData[1] = fanData[1] + item.SpendMoney
+                  break;
+                case '娱乐':
+                  fanData[2] = fanData[2] + item.SpendMoney
+                  break;
+                case '学习':
+                  fanData[3] = fanData[3] + item.SpendMoney
+                  break;
+                case '日用品':
+                  fanData[4] = fanData[4] + item.SpendMoney
+                  break;
+                case '其他':
+                  fanData[5] = fanData[5] + item.SpendMoney
+                  break;
+              }
+            }
           }
         }
       })
-      this.fanDataObj = [{
-        name: '餐饮', value: fanData[0]
-      }, {
-        name: '出行', value: fanData[1],
-      }, {
-        name: '娱乐', value: fanData[2],
-      }, {
-        name: '学习', value: fanData[3],
-      }, {
-        name: '日用品', value: fanData[4],
-      }, {
-        name: '其他', value: fanData[5],
-      }]
-      console.log(this.fanDataObj)
+      // 利用sum是否等于0来判断monthRange是否有值，如果没有值，就会隐藏扇形图
+      let sum = 0
+      for (let i = 0; i < fanData.length; i++) {
+        sum = fanData[i] + sum
+      }
+      if (sum === 0) {
+        this.fanDataObj = [{
+          name: '暂无支出记录', value: 0
+        }]
+      } else {
+        this.fanDataObj = [{
+          name: '餐饮', value: fanData[0]
+        }, {
+          name: '出行', value: fanData[1],
+        }, {
+          name: '娱乐', value: fanData[2],
+        }, {
+          name: '学习', value: fanData[3],
+        }, {
+          name: '日用品', value: fanData[4],
+        }, {
+          name: '其他', value: fanData[5],
+        }]
+        console.log(this.fanDataObj)
+      }
     },
     // 切换月份，根据相应的月份
-    mouthChange (e) {
-      this.mouthText = e.data.text
-      // console.log(this.mouth)
+    monthChange (e) {
+      this.monthText = e.data.text
+      console.log(122, e.data.text.substring(7, 5).trim())
+      // console.log(this.month)
       // 重新渲染图表
-      this.getFanMouthData()
+      this.getFanMonthData()
       this.getServerData()
+      this.getMonthMoneyArray()
       // uni.redirectTo({
       //   url: '/pages/chart/chart'
       // })
-    },
+    }
+    ,
     // 获取账单的记账日期,提供给月份选择框
     getTimeList () {
       for (let i = 0; i < this.timeList.length; i++) {
         let obj = {}
-        obj.value = i
-        this.mouth = this.timeList[i].substring(7, 5).trim()
-        if (this.mouth[0] === '0') {
-          this.mouth = this.mouth[1]
+        // 判断monthRange里面是否存在相同的日历，如果相同就不添加进去
+        let result = this.monthRange.find(item => {
+          return item.text === this.timeList[i].substring(0, 7) + '月'
+        })
+        if (!result) {
+          obj.value = i
+          obj.text = this.timeList[i].substring(0, 7) + '月'
+          this.monthRange.push(obj)
+          this.monthText = this.monthRange[0].text
         }
-        obj.text = this.mouth + '月'
-        // console.log(1233, obj)
-        this.mouthRange.push(obj)
-        this.mouthText = this.mouthRange[0].text
       }
     }
   }
@@ -344,20 +452,30 @@ export default {
   .charts-box {
     width: 100%;
     position: relative;
-    height: 550rpx;
+    height: 600rpx;
     background-color: #ffffff;
     z-index: 0;
+    clear: both;
   }
 
 
   .my-select {
-    margin-top: 10rpx;
-    width: 100%;
-    height: 70rpx;
+    position: relative;
+    border-radius: 10rpx;
+    margin-left: 20rpx;
+    width: 30%;
+    top: 12rpx;
+    margin-bottom: 10rpx;
+    height: 60rpx;
     background-color: #007aff;
-    line-height: 70rpx;
+    line-height: 60rpx;
     text-align: center;
     color: whitesmoke;
+  }
+
+  .swiper {
+    width: 100%;
+    height: 1200rpx;
   }
 }
 </style>
