@@ -22,7 +22,7 @@
               :chartData="monthChartData"
           />
         </view>
-        <view class="charts-box">
+        <view class="charts-box-fan">
           <!--        扇形图-->
           <qiun-data-charts
               type="pie"
@@ -38,6 +38,11 @@
       <swiper-item class="swiper">
         <!--    折线图-->
         <view class="charts-box">
+          <hpy-form-select :dataList="yearRange" text="text" name="value"
+                           v-model="yearValue" islot="true"
+                           @change="yearChange">
+            <view class="my-select-year">{{ yearText }}</view>
+          </hpy-form-select>
           <qiun-data-charts
               type="line"
               :opts="yearLineOpts"
@@ -47,6 +52,17 @@
               canvas-id="world"
           />
         </view>
+        <!--        扇形图-->
+        <view class="charts-box-fan">
+          <qiun-data-charts
+              type="pie"
+              :opts="yearFanOpts"
+              :chartData="yearFanChartData"
+              :canvas2d="false"
+              canvas-id="niHao"
+          />
+        </view>
+
       </swiper-item>
     </swiper>
   </view>
@@ -60,10 +76,19 @@ export default {
     return {
       // 月份下拉框
       monthValue: 0,
-      monthText: '',
+      yearValue: 0,
+      yearText: '2023',
+      monthText: '暂无记账记录',
       month: '',
       // 消费月份的列表(默认为列表第一个)
       monthRange: [],
+      yearRange: [{
+        value: 0, text: '2023',
+      }, {
+        value: 1, text: '2024'
+      }, {
+        value: 2, text: '2025'
+      }],
       // tab栏的数值
       current: 0,
       // tab栏的选项
@@ -85,6 +110,8 @@ export default {
       // 月扇形图的数据
       fanChartData: {},
       fanDataObj: [],
+      yearFanDataObj: [],
+      yearFanChartData: {},
       yearLineOpts: {
         color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
         padding: [15, 10, 0, 15],
@@ -140,22 +167,40 @@ export default {
             activeType: "hollow"
           }
         }
+      },
+      yearFanOpts: {
+        color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
+        padding: [5, 5, 5, 5],
+        enableScroll: false,
+        extra: {
+          pie: {
+            activeOpacity: 0.5,
+            activeRadius: 10,
+            offsetAngle: 0,
+            labelWidth: 15,
+            border: true,
+            borderWidth: 3,
+            borderColor: "#FFFFFF"
+          }
+        }
       }
     }
   },
-  onReady () {
+  onShow () {
     // 获取所有账单的月份
     this.getTimeList()
 
     this.getServerData();
     // 获取消费金额的数组
-    this.getMoneyArray()
+    this.getYearMoneyArray()
     // 获取现今的年月
     this.getCalendar()
     // 获取扇形图的数据
     this.getFanMonthData()
     // 获取月消费数据的数组
     this.getMonthMoneyArray()
+    // 获取年扇形图的数据
+    this.getFanYearData()
   },
   computed: {
     ...mapState('m_list', ['spendList']),
@@ -169,7 +214,7 @@ export default {
           categories: this.calendarArray,
           series: [
             {
-              name: "消费",
+              name: "支出",
               data: this.spendMoneyArray
             },
             {
@@ -199,6 +244,14 @@ export default {
             },
           ]
         };
+        let yearFanRes = {
+          series: [
+            {
+              data: this.yearFanDataObj
+            }
+          ]
+        };
+        this.yearFanChartData = JSON.parse(JSON.stringify(yearFanRes));
         this.monthChartData = JSON.parse(JSON.stringify(monthRes));
         this.fanChartData = JSON.parse(JSON.stringify(fanRes));
         this.yearChatData = JSON.parse(JSON.stringify(res));
@@ -206,101 +259,106 @@ export default {
     },
 
 // （年）获取记账列表中消费和收入的金额，将其分别组成一个数组提供给折线图
-    getMoneyArray () {
+    getYearMoneyArray () {
       this.spendMoneyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       this.spendList.forEach(item => {
-        let calendar_month = item.calendar.substring(10, 6).trim()
-        // console.log(12, calendar_month)
-        if (item.flag === 0) {
-          // 强制转换为数字
-          item.SpendMoney = parseInt(item.SpendMoney)
-          // 根据月份来进行加减
-          switch (calendar_month) {
-            case '01':
-              this.spendMoneyArray[0] = item.SpendMoney + this.spendMoneyArray[0]
-              break;
-            case '02':
-              this.spendMoneyArray[1] = item.SpendMoney + this.spendMoneyArray[1]
-              break;
-            case '03':
-              this.spendMoneyArray[2] = item.SpendMoney + this.spendMoneyArray[2]
-              break;
-            case '04':
-              this.spendMoneyArray[3] = item.SpendMoney + this.spendMoneyArray[3]
-              break;
-            case '05':
-              this.spendMoneyArray[4] = item.SpendMoney + this.spendMoneyArray[4]
-              break;
-            case '06':
-              this.spendMoneyArray[5] = item.SpendMoney + this.spendMoneyArray[5]
-              break;
-            case '07':
-              this.spendMoneyArray[6] = item.SpendMoney + this.spendMoneyArray[6]
-              break;
-            case '08':
-              this.spendMoneyArray[7] = item.SpendMoney + this.spendMoneyArray[7]
-              break;
-            case '09':
-              this.spendMoneyArray[8] = item.SpendMoney + this.spendMoneyArray[8]
-              break;
-            case '10':
-              this.spendMoneyArray[9] = item.SpendMoney + this.spendMoneyArray[9]
-              break;
-            case '11':
-              this.spendMoneyArray[10] = item.SpendMoney + this.spendMoneyArray[10]
-              break;
-            case '12':
-              this.spendMoneyArray[11] = item.SpendMoney + this.spendMoneyArray[11]
-              break;
+        // 筛选用户选择的年份
+        if (parseInt(item.calendar.split(' - ')[0]) === parseInt(this.yearText)) {
+          let calendar_month = item.calendar.substring(10, 6).trim()
+          // console.log(12, calendar_month)
+          if (item.flag === 0) {
+            // 强制转换为数字
+            item.SpendMoney = parseInt(item.SpendMoney)
+            // 根据月份来进行加减
+            switch (calendar_month) {
+              case '01':
+                this.spendMoneyArray[0] = item.SpendMoney + this.spendMoneyArray[0]
+                break;
+              case '02':
+                this.spendMoneyArray[1] = item.SpendMoney + this.spendMoneyArray[1]
+                break;
+              case '03':
+                this.spendMoneyArray[2] = item.SpendMoney + this.spendMoneyArray[2]
+                break;
+              case '04':
+                this.spendMoneyArray[3] = item.SpendMoney + this.spendMoneyArray[3]
+                break;
+              case '05':
+                this.spendMoneyArray[4] = item.SpendMoney + this.spendMoneyArray[4]
+                break;
+              case '06':
+                this.spendMoneyArray[5] = item.SpendMoney + this.spendMoneyArray[5]
+                break;
+              case '07':
+                this.spendMoneyArray[6] = item.SpendMoney + this.spendMoneyArray[6]
+                break;
+              case '08':
+                this.spendMoneyArray[7] = item.SpendMoney + this.spendMoneyArray[7]
+                break;
+              case '09':
+                this.spendMoneyArray[8] = item.SpendMoney + this.spendMoneyArray[8]
+                break;
+              case '10':
+                this.spendMoneyArray[9] = item.SpendMoney + this.spendMoneyArray[9]
+                break;
+              case '11':
+                this.spendMoneyArray[10] = item.SpendMoney + this.spendMoneyArray[10]
+                break;
+              case '12':
+                this.spendMoneyArray[11] = item.SpendMoney + this.spendMoneyArray[11]
+                break;
+            }
           }
         }
       })
       // 获取收入金额数组
       this.incomeMoneyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       this.spendList.forEach(item => {
-        let calendar_month = item.calendar.substring(10, 6).trim()
-        // console.log(12, calendar_month)
-        if (item.flag === 1) {
-          // 强制转换为数字
-          item.SpendMoney = parseInt(item.SpendMoney)
-          // 根据消费月份来进行相同月份账单的求和
-          switch (calendar_month) {
-            case '01':
-              this.incomeMoneyArray[0] = item.SpendMoney + this.incomeMoneyArray[0]
-              break;
-            case '02':
-              this.incomeMoneyArray[1] = item.SpendMoney + this.incomeMoneyArray[1]
-              break;
-            case '03':
-              this.incomeMoneyArray[2] = item.SpendMoney + this.incomeMoneyArray[2]
-              break;
-            case '04':
-              this.incomeMoneyArray[3] = item.SpendMoney + this.incomeMoneyArray[3]
-              break;
-            case '05':
-              this.incomeMoneyArray[4] = item.SpendMoney + this.incomeMoneyArray[4]
-              break;
-            case '06':
-              this.incomeMoneyArray[5] = item.SpendMoney + this.incomeMoneyArray[5]
-              break;
-            case '07':
-              this.incomeMoneyArray[6] = item.SpendMoney + this.incomeMoneyArray[6]
-              break;
-            case '08':
-              this.incomeMoneyArray[7] = item.SpendMoney + this.incomeMoneyArray[7]
-              break;
-            case '09':
-              this.incomeMoneyArray[8] = item.SpendMoney + this.incomeMoneyArray[8]
-              break;
-            case '10':
-              this.incomeMoneyArray[9] = item.SpendMoney + this.incomeMoneyArray[9]
-              break;
-            case '11':
-              this.incomeMoneyArray[10] = item.SpendMoney + this.incomeMoneyArray[10]
-              break;
-            case '12':
-              this.incomeMoneyArray[11] = item.SpendMoney + this.incomeMoneyArray[11]
-              break;
+        if (parseInt(item.calendar.split(' - ')[0]) === parseInt(this.monthText)) {
+          let calendar_month = item.calendar.substring(10, 6).trim()
+          // console.log(12, calendar_month)
+          if (item.flag === 1) {
+            // 强制转换为数字
+            item.SpendMoney = parseInt(item.SpendMoney)
+            // 根据消费月份来进行相同月份账单的求和
+            switch (calendar_month) {
+              case '01':
+                this.incomeMoneyArray[0] = item.SpendMoney + this.incomeMoneyArray[0]
+                break;
+              case '02':
+                this.incomeMoneyArray[1] = item.SpendMoney + this.incomeMoneyArray[1]
+                break;
+              case '03':
+                this.incomeMoneyArray[2] = item.SpendMoney + this.incomeMoneyArray[2]
+                break;
+              case '04':
+                this.incomeMoneyArray[3] = item.SpendMoney + this.incomeMoneyArray[3]
+                break;
+              case '05':
+                this.incomeMoneyArray[4] = item.SpendMoney + this.incomeMoneyArray[4]
+                break;
+              case '06':
+                this.incomeMoneyArray[5] = item.SpendMoney + this.incomeMoneyArray[5]
+                break;
+              case '07':
+                this.incomeMoneyArray[6] = item.SpendMoney + this.incomeMoneyArray[6]
+                break;
+              case '08':
+                this.incomeMoneyArray[7] = item.SpendMoney + this.incomeMoneyArray[7]
+                break;
+              case '09':
+                this.incomeMoneyArray[8] = item.SpendMoney + this.incomeMoneyArray[8]
+                break;
+              case '10':
+                this.incomeMoneyArray[9] = item.SpendMoney + this.incomeMoneyArray[9]
+                break;
+              case '11':
+                this.incomeMoneyArray[10] = item.SpendMoney + this.incomeMoneyArray[10]
+                break;
+              case '12':
+                this.incomeMoneyArray[11] = item.SpendMoney + this.incomeMoneyArray[11]
+                break;
+            }
           }
         }
       })
@@ -327,7 +385,7 @@ export default {
             if (parseInt(item.calendar.substring(10, 6).trim()) === parseInt(this.monthText.substring(7, 5).trim())) {
               // 将天数作为索引
               let index = parseInt(item.calendar.split(' - ')[2])
-              this.monthSpendMoneyArray[index] = this.monthSpendMoneyArray[index] + item.SpendMoney
+              this.monthSpendMoneyArray[index - 1] = this.monthSpendMoneyArray[index - 1] + item.SpendMoney
             }
           } else {// 判断为收入
             if (parseInt(item.calendar.substring(10, 6).trim()) === parseInt(this.monthText.substring(7, 5).trim())) {
@@ -342,8 +400,7 @@ export default {
 // 获取现在到后5个月的月份，渲染到x轴
     getCalendar () {
       this.calendarArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    }
-    ,
+    },
     // 改变tab栏，将swiper的索引一起修改
     changeTab (index) {
       console.log('当前选择的是', index)
@@ -351,12 +408,11 @@ export default {
     ,
     // 获取某个月的消费扇形图
     getFanMonthData () {
-      let data = new Date()
-      let year = data.getFullYear()
       let fanData = [0, 0, 0, 0, 0, 0]
       this.spendList.forEach(item => {
         if (item.flag === 0) {
-          if (parseInt(item.calendar.split('-')) === year) {
+          // 判断是不是今年（只展示今年的月份的消费情况）
+          if (parseInt(item.calendar.split('-')) === this.getYear()) {
             let changeMonth = item.calendar.substring(10, 6).trim()
             // 如果月份和选择的月份相同，才进行加减
             if (changeMonth === this.monthText.substring(7, 5).trim()) {
@@ -407,24 +463,86 @@ export default {
         }, {
           name: '其他', value: fanData[5],
         }]
-        console.log(this.fanDataObj)
       }
     },
-    // 切换月份，根据相应的月份
+    // 获取某一年的消费扇形图的数据
+    getFanYearData () {
+      let fanData = new Array(6).fill(0)
+      this.spendList.forEach(item => {
+        if (parseInt(item.calendar.split(' - ')[0]) === parseInt(this.yearText)) {
+          switch (item.spendType) {
+            case '餐饮':
+              fanData[0] = fanData[0] + item.SpendMoney
+              break;
+            case '出行':
+              fanData[1] = fanData[1] + item.SpendMoney
+              break;
+            case '娱乐':
+              fanData[2] = fanData[2] + item.SpendMoney
+              break;
+            case '学习':
+              fanData[3] = fanData[3] + item.SpendMoney
+              break;
+            case '日用品':
+              fanData[4] = fanData[4] + item.SpendMoney
+              break;
+            case '其他':
+              fanData[5] = fanData[5] + item.SpendMoney
+              break;
+          }
+        }
+      })
+      let sum = 0
+      for (let i = 0; i < fanData.length; i++) {
+        sum = fanData[i] + sum
+      }
+      if (sum === 0) {
+        this.yearFanDataObj = [{
+          name: '暂无支出记录', value: 0
+        }]
+      } else {
+        this.yearFanDataObj = [{
+          name: '餐饮', value: fanData[0]
+        }, {
+          name: '出行', value: fanData[1],
+        }, {
+          name: '娱乐', value: fanData[2],
+        }, {
+          name: '学习', value: fanData[3],
+        }, {
+          name: '日用品', value: fanData[4],
+        }, {
+          name: '其他', value: fanData[5],
+        }]
+        console.log(this.yearFanDataObj)
+      }
+    },
+    /**获取当前的年份
+     */
+    getYear () {
+      let date = new Date()
+      let year = date.getFullYear()
+      return year
+    },
+// 切换月份，根据相应的月份
     monthChange (e) {
       this.monthText = e.data.text
-      console.log(122, e.data.text.substring(7, 5).trim())
-      // console.log(this.month)
       // 重新渲染图表
       this.getFanMonthData()
       this.getServerData()
       this.getMonthMoneyArray()
-      // uni.redirectTo({
-      //   url: '/pages/chart/chart'
-      // })
-    }
-    ,
-    // 获取账单的记账日期,提供给月份选择框
+
+    },
+// 年份改变
+    yearChange (e) {
+      this.yearText = e.data.text
+      console.log(this.yearText)
+      // 重新渲染图表
+      this.getYearMoneyArray()
+      this.getServerData()
+      this.getFanYearData()
+    },
+// 获取账单的记账日期,提供给月份选择框
     getTimeList () {
       for (let i = 0; i < this.timeList.length; i++) {
         let obj = {}
@@ -451,13 +569,15 @@ export default {
 
   .charts-box {
     width: 100%;
-    position: relative;
     height: 600rpx;
     background-color: #ffffff;
-    z-index: 0;
     clear: both;
   }
 
+  .charts-box-fan {
+    background-color: white;
+    height: 600rpx;
+  }
 
   .my-select {
     position: relative;
@@ -471,6 +591,20 @@ export default {
     line-height: 60rpx;
     text-align: center;
     color: whitesmoke;
+  }
+
+  .my-select-year {
+    position: relative;
+    border-radius: 10rpx;
+    margin-left: 20rpx;
+    width: 30%;
+    top: 12rpx;
+    margin-bottom: 10rpx;
+    height: 60rpx;
+    background-color: #f8dc2d;
+    line-height: 60rpx;
+    text-align: center;
+    color: #0d0a0e;
   }
 
   .swiper {

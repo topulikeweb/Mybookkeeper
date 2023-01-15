@@ -201,7 +201,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('m_list', ['setTimeList']),
+    ...mapMutations('m_list', ['updateTimeList']),
     // 顶部tab栏切换
     changeTab (index) {
       this.current = index;
@@ -238,77 +238,85 @@ export default {
       this.costForm.calendar = e.fulldate
     },
     // 提交消费表单信息给后端
-    submitSpend (keepItem, callback) {
-      uni.showLoading({
-        title: '数据加载中'
-      })
-      this.costForm.flag = 0
-      console.log(this.$refs)
-      this.$refs.sForm.validate().then(res => {
-        uni.$showMsg('保存成功', 2000)
-        // TODO 后端接口（把表单信息传给后端）
-        console.log('表单信息', this.costForm)
-
-
-        this.costForm.SpendMoney = ''
-        uni.hideLoading()
-      }).catch(err => {
-        uni.$showMsg('表单信息有误', 2000)
-        console.log(err)
-        uni.hideLoading()
-      })
-      // 将时间传给账单列表的时间选择框
-      if (this.costForm.calendar) {
-        // 先判断有没有重复
-        const result = this.timeList.find((item) => {
-          return item === this.costForm.calendar
+    submitSpend () {
+      if (Date.parse(this.costForm.calendar) <= this.getNowTime()) {
+        uni.showLoading({
+          title: '数据加载中'
         })
-        // 如果没有重复
-        if (!result) {
-          this.timeList.push(this.costForm.calendar)
-          // 将本次消费时间存入本地
-          this.setTimeList()
+        this.costForm.flag = 0
+        console.log(this.$refs)
+        this.$refs.sForm.validate().then(res => {
+          uni.$showMsg('保存成功', 2000)
+          // TODO 后端接口（把表单信息传给后端）
+          console.log('表单信息', this.costForm)
+
+
+          this.costForm.SpendMoney = ''
+          uni.hideLoading()
+        }).catch(err => {
+          uni.$showMsg('表单信息有误', 2000)
+          console.log(err)
+          uni.hideLoading()
+        })
+        // 将时间传给账单列表的时间选择框
+        if (this.costForm.calendar) {
+          // 先判断有没有重复
+          const result = this.timeList.find((item) => {
+            return item === this.costForm.calendar
+          })
+          // 如果没有重复
+          if (!result) {
+            this.timeList.push(this.costForm.calendar)
+            // // 将本次消费时间存入本地
+            // this.setTimeList()
+            this.updateTimeList(this.timeList)
+          }
         }
+      } else {
+        uni.$showMsg('不能选择之后的日期')
       }
     },
+    // 获取当前时间(秒)
+    getNowTime () {
+      const date = new Date()
+      return date.getTime()
+    },
     submitIncome () {
-      uni.showLoading({
-        title: '数据加载中'
-      })
-      // 将本次提交账单状态设置为收入
-      this.costForm.flag = 1
-      // 点击后进行的回调函数
-      this.$refs.iForm.validate().then(res => {
-        uni.$showMsg('保存成功', 2000)
-        // TODO 后端接口和上述一样（把表单信息传给后端）
-        console.log('表单信息', this.costForm)
-
-
-        this.costForm.SpendMoney = ''
-        uni.hideLoading()
-      }).catch(err => {
-        uni.$showMsg('表单信息有误', 2000)
-        uni.hideLoading()
-      })
-      // 将时间传给账单列表的时间选择框
-      if (this.costForm.calendar) {
-        // 先判断有没有重复
-        const result = this.timeList.find((item) => {
-          return item === this.costForm.calendar
+      if (Date.parse(this.costForm.calendar) <= this.getNowTime()) {
+        uni.showLoading({
+          title: '数据加载中'
         })
-        // 如果没有重复
-        if (!result) {
-          this.timeList.push(this.costForm.calendar)
-          // 将本次消费时间存入本地
-          this.setTimeList()
+        // 将本次提交账单状态设置为收入
+        this.costForm.flag = 1
+        // 点击后进行的回调函数
+        this.$refs.iForm.validate().then(res => {
+          uni.$showMsg('保存成功', 2000)
+          // TODO 后端接口和上述一样（把表单信息传给后端）
+          console.log('表单信息', this.costForm)
+
+
+          this.costForm.SpendMoney = ''
+          uni.hideLoading()
+        }).catch(err => {
+          uni.$showMsg('表单信息有误', 2000)
+          uni.hideLoading()
+        })
+        // 将时间传给账单列表的时间选择框
+        if (this.costForm.calendar) {
+          // 先判断有没有重复
+          const result = this.timeList.find((item) => {
+            return item === this.costForm.calendar
+          })
+          // 如果没有重复
+          if (!result) {
+            this.timeList.push(this.costForm.calendar)
+            // 将本次消费时间存入本地
+            this.updateTimeList(this.timeList)
+          }
         }
+      } else {
+        uni.$showMsg('不能选择之后的日期')
       }
-      uni.redirectTo({
-        url: '/pages/statistics/statistics'
-      })
-      uni.redirectTo({
-        url: '/pages/chart/chart'
-      })
     }
   },
   created () {

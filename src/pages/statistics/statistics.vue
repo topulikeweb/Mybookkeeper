@@ -57,6 +57,7 @@ export default {
   name: "statistics",
   data () {
     return {
+      reload: true,
       // 请过来的数组
       spendList: [],
       value: 0,
@@ -100,7 +101,6 @@ export default {
     ...mapState('m_list', ['timeList']),
   },
   methods: {
-    ...mapMutations('m_list', ['setTimeList']),
     ...mapMutations('m_list', ['updateSpendList']),
     ...mapMutations('m_list', ['updateTimeList']),
     changeMouth (e) {
@@ -116,6 +116,7 @@ export default {
     addTimeRange () {
       // 先对记账时间进行排序
       this.sortTime()
+      console.log('调用了')
       for (let i = 0; i < this.timeList.length; i++) {
         let obj = {}
         obj.value = i
@@ -176,15 +177,12 @@ export default {
           spendType: '学习'
         }]
       this.updateSpendList(this.spendList)
-      uni.redirectTo({
-        url: '/subpkg/billing_page/billing_page'
-      })
     },
   },
-  onReady () {
+  onShow () {
     this.getSpendList()
     this.addTimeRange()
-  },
+  }
 }
 </script>
 
