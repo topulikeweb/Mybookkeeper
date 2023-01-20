@@ -10,13 +10,13 @@
     </view>
 
     <!--    tab栏下内容部分使用轮播图-->
-    <swiper class="swiper-box" :current="swiperCurrent">
+    <swiper class="swiper-box" :current="swiperCurrent" @change="changeSwiper">
       <swiper-item class="swiper-item">
         <view class="text-box">
           <uni-forms :modelValue="costForm" ref="sForm" rules="rules">
             <!--            金额输入框-->
-            <uni-forms-item label="金额" name="SpendMoney">
-              <uni-easyinput v-model="costForm.SpendMoney"
+            <uni-forms-item label="金额" name="spendMoney">
+              <uni-easyinput v-model="costForm.spendMoney"
                              placeholder="请输入金额"
                              type="number" @click="showNumberKeyboard">
               </uni-easyinput>
@@ -61,6 +61,16 @@
 
               </uni-easyinput>
             </uni-forms-item>
+            <!--            上传图片-->
+            <uni-forms-item>
+              <uni-section title="选择消费凭据(发票)" type="line">
+                <view class="example-body">
+                  <uni-file-picker limit="1"
+                                   title="最多选择1张图片"
+                                   @select="getImageUrl"></uni-file-picker>
+                </view>
+              </uni-section>
+            </uni-forms-item>
           </uni-forms>
           <button type="primary" @click="submitSpend"
                   v-model="costForm.remarks" class="submitSpend">
@@ -74,8 +84,8 @@
         <view class="text-box">
           <uni-forms :modelValue="costForm" ref="iForm" rules="rules">
             <!--            金额输入框-->
-            <uni-forms-item label="金额" name="SpendMoney">
-              <uni-easyinput v-model="costForm.SpendMoney"
+            <uni-forms-item label="金额" name="spendMoney">
+              <uni-easyinput v-model="costForm.spendMoney"
                              placeholder="请输入金额"
                              type="number" @click="showNumberKeyboard">
               </uni-easyinput>
@@ -109,7 +119,7 @@
               <picker name="type" :range="incomeTypeRanges"
                       @change="onSpendChange"
                       class="form-input">
-                <view>{{ Spend }}</view>
+                <view>{{ Income }}</view>
               </picker>
             </uni-forms-item>
 
@@ -119,6 +129,17 @@
                              placeholder="可输入消费地点">
 
               </uni-easyinput>
+            </uni-forms-item>
+            <uni-forms-item>
+              <!--              选择图片-->
+              <uni-section title="选择消费凭据(发票)" type="line">
+                <view class="example-body">
+                  <uni-file-picker limit="1"
+                                   title="最多选择1张图片"
+                                   ref="imgPicker"
+                                   @select="getImageUrl"></uni-file-picker>
+                </view>
+              </uni-section>
             </uni-forms-item>
           </uni-forms>
           <button type="primary" @click="submitIncome"
@@ -144,12 +165,14 @@ export default {
       showIncomePickerFlag: false,
       // 表单数据(收入和消费共用一个表单)
       costForm: {
-        SpendMoney: '',// 消费金额
-        SpendType: '',// 消费类型
+        spendMoney: '',// 消费金额
+        spendType: '',// 消费类型
         remarks: '',// 消费地点
         AccountType: '',// 账户类型
         calendar: '',// 消费时间
         flag: '',// 标志判断是收入还是消费
+        credential: '',// 消费凭证
+        shoper: ' '// 店家信息
       },
       AccountTypeRanges: ['现金', '微信', '支付宝', '银行卡'],
       spendTypeRanges: ['餐饮', '出行', '娱乐', '学习', '日用品', '其他'],
@@ -159,7 +182,7 @@ export default {
       swiperCurrent: 0,
       // 表单校验
       rules: {
-        SpendMoney: {
+        spendMoney: {
           rules: [
             {
               required: true,
@@ -196,16 +219,33 @@ export default {
         return this.spendTypeRanges[this.spendIndex];
       },
       set (val) {
-        this.costForm.SpendType = val;
+        this.costForm.spendType = val;
       }
     },
+    Income: {
+      get () {
+        return this.incomeTypeRanges[this.spendIndex];
+      },
+      set (val) {
+        this.costForm.spendType = val
+      }
+    }
   },
   methods: {
     ...mapMutations('m_list', ['updateTimeList']),
+    ...mapMutations('m_user', ['tokenLister']),
     // 顶部tab栏切换
     changeTab (index) {
       this.current = index;
       this.swiperCurrent = index
+    },
+    // swiper改变，让tab栏跟着一起改变
+    changeSwiper (e) {
+      this.current = e.detail.current
+    },
+    // 获取图片的url，目前只获取一张
+    getImageUrl (e) {
+      this.costForm.credential = e.tempFilePaths[0]
     },
     showNumberKeyboard () {
       this.showKeyBoardFlag = true;
@@ -220,7 +260,7 @@ export default {
     },
     onSpendChange (e) {
       this.spendIndex = e.detail.value
-      this.costForm.SpendType = this.Spend
+      this.costForm.spendType = this.Spend
     },
     // 点击打开日历
     open () {
@@ -240,6 +280,8 @@ export default {
     // 提交消费表单信息给后端
     submitSpend () {
       if (Date.parse(this.costForm.calendar) <= this.getNowTime()) {
+        // 将消费类型校验，以免错误的提交消费类型
+        this.costForm.spendType = this.spendTypeRanges[this.spendIndex];
         uni.showLoading({
           title: '数据加载中'
         })
@@ -251,7 +293,7 @@ export default {
           console.log('表单信息', this.costForm)
 
 
-          this.costForm.SpendMoney = ''
+          this.costForm.spendMoney = ''
           uni.hideLoading()
         }).catch(err => {
           uni.$showMsg('表单信息有误', 2000)
@@ -281,8 +323,11 @@ export default {
       const date = new Date()
       return date.getTime()
     },
+    // 提交收入
     submitIncome () {
+      // 判断用户选择的时间是否正确
       if (Date.parse(this.costForm.calendar) <= this.getNowTime()) {
+        this.costForm.spendType = this.incomeTypeRanges[this.spendIndex];
         uni.showLoading({
           title: '数据加载中'
         })
@@ -295,7 +340,7 @@ export default {
           console.log('表单信息', this.costForm)
 
 
-          this.costForm.SpendMoney = ''
+          this.costForm.spendMoney = ''
           uni.hideLoading()
         }).catch(err => {
           uni.$showMsg('表单信息有误', 2000)
@@ -317,11 +362,16 @@ export default {
       } else {
         uni.$showMsg('不能选择之后的日期')
       }
+      console.log(this.$refs.imgPicker)
     }
   },
   created () {
     this.costForm.AccountType = this.Account
-    this.costForm.SpendType = this.Spend
+    if (this.costForm.flag === 0) {
+      this.costForm.spendType = this.Spend
+    } else {
+      this.costForm.spendType = this.Income
+    }
   },
   // 设置表单校验规则
   onReady () {
@@ -329,6 +379,9 @@ export default {
     this.$refs.sForm.setRules(this.rules)
     this.$refs.iForm.setRules(this.rules)
   },
+  onShow () {
+    this.tokenLister()
+  }
 }
 </script>
 
@@ -349,7 +402,7 @@ export default {
     padding: 20rpx;
     font-size: 28rpx;
     // TODO：记得改高度
-    height: 1000rpx;
+    height: 1200rpx;
 
     .uni-forms-item {
       border-bottom: 0.5px #e3e1e1 solid;
@@ -387,6 +440,8 @@ export default {
   }
 
   .submitSpend {
+    position: relative;
+    top: 0;
     background-color: #0d0a0e;
     color: white;
   }

@@ -5,6 +5,7 @@ import dropdown from 'components/dt-dropdown/dt-dropdown'
 import store from 'store/store'
 
 
+
 Vue.component('dropdown', dropdown)
 
 Vue.prototype.$store = store
@@ -18,10 +19,9 @@ uni.$showMsg = function (title = '数据加载失败', duration = 2000) {
     icon: 'none'
   })
 }
-
 const app = new Vue({
   ...App,
-  store
+  store,
 })
 app.$mount()
 

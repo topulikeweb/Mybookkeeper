@@ -28,6 +28,11 @@
       "path": "pages/my/my",
       "style": {
       }
+    },
+    {
+      "path": "pages/my-login/my-login",
+      "style": {
+      }
     }
   ],
   "globalStyle": {

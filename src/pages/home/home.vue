@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex'
+
 export default {
   name: "home",
   data () {
@@ -42,11 +44,21 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('m_user', ['tokenLister']),
     makeAccount () {
       uni.navigateTo({
         url: '/subpkg/billing_page/billing_page'
       })
     }
+  },
+  computed: {
+    ...mapState('m_user', ['token'])
+  },
+  onShow () {
+    console.log(1212)
+    console.log('计时')
+    // 监听token是否存在
+    this.tokenLister()
   }
 }
 </script>
@@ -98,12 +110,12 @@ export default {
   position: absolute;
   right: 10rpx;
   bottom: 10rpx;
-  color:  #e3dfdf;
+  color: #e3dfdf;
   font-weight: 100;
 }
 
 .bottom-box {
-  background-color:#ffffff;
+  background-color: #ffffff;
   width: 100%;
   height: 57%;
   position: relative;

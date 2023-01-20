@@ -1,11 +1,11 @@
 export default {
   namespaced: true,
-  state: () => ({
+  state: {
     // 时间列表
     timeList: JSON.parse(uni.getStorageSync('timeList') || '[]'),
     // 消费列表
     spendList: JSON.parse(uni.getStorageSync('spendList') || '[]')
-  }),
+  },
   actions: {},
   mutations: {
     setTimeList (state) {
