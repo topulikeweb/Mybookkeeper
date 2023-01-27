@@ -187,19 +187,11 @@ export default {
     }
   },
   onShow () {
-    // 获取所有账单的月份
     this.getTimeList()
-
     this.getServerData();
-    // 获取消费金额的数组
     this.getYearMoneyArray()
-    // 获取现今的年月
-    this.getCalendar()
-    // 获取扇形图的数据
     this.getFanMonthData()
-    // 获取月消费数据的数组
     this.getMonthMoneyArray()
-    // 获取年扇形图的数据
     this.getFanYearData()
   },
   computed: {
@@ -211,7 +203,7 @@ export default {
       //模拟从服务器获取数据时的延时(这里就用后端接口了，页面处理逻辑就行)
       setTimeout(() => {
         let res = {
-          categories: this.calendarArray,
+          categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
           series: [
             {
               name: "支出",
@@ -258,7 +250,11 @@ export default {
       }, 100);
     },
 
-// （年）获取记账列表中消费和收入的金额，将其分别组成一个数组提供给折线图
+    /**
+     * @Description: （年）获取记账列表中消费和收入的金额，将其分别组成一个数组提供给折线图
+     * @author topu
+     * @date 2023/1/16
+     */
     getYearMoneyArray () {
       this.spendMoneyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       this.spendList.forEach(item => {
@@ -397,16 +393,15 @@ export default {
         }
       })
     },
-// 获取现在到后5个月的月份，渲染到x轴
-    getCalendar () {
-      this.calendarArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    },
+
     // 改变tab栏，将swiper的索引一起修改
     changeTab (index) {
       console.log('当前选择的是', index)
     }
     ,
-    // 获取某个月的消费扇形图
+    /**mapState
+     * 根据选择的月份获取选择的月份的消费和收入数据
+     */
     getFanMonthData () {
       let fanData = [0, 0, 0, 0, 0, 0]
       this.spendList.forEach(item => {
@@ -465,7 +460,9 @@ export default {
         }]
       }
     },
-    // 获取某一年的消费扇形图的数据
+    /**mapState
+     * 根据选择的年份获取当前选择年份的消费数据（年扇形图）
+     */
     getFanYearData () {
       let fanData = new Array(6).fill(0)
       this.spendList.forEach(item => {
@@ -524,7 +521,10 @@ export default {
       let year = date.getFullYear()
       return year
     },
-// 切换月份，根据相应的月份
+    /**
+     * 切换月份，根据相应的月份
+     * @param e(选择项的详细信息)
+     */
     monthChange (e) {
       this.monthText = e.data.text
       // 重新渲染图表
@@ -533,7 +533,10 @@ export default {
       this.getMonthMoneyArray()
 
     },
-// 年份改变
+    /**
+     *年份选择框发生改变
+     * @param e(选择项的详细信息)
+     */
     yearChange (e) {
       this.yearText = e.data.text
       console.log(this.yearText)
@@ -542,7 +545,9 @@ export default {
       this.getServerData()
       this.getFanYearData()
     },
-// 获取账单的记账日期,提供给月份选择框
+    /**
+     * 获取账单的记账日期,提供给月份选择框获取账单的记账日期,提供给月份选择框
+     */
     getTimeList () {
       for (let i = 0; i < this.timeList.length; i++) {
         let obj = {}
@@ -572,25 +577,25 @@ export default {
     height: 600rpx;
     background-color: #ffffff;
     clear: both;
+
+    .my-select {
+      position: relative;
+      border-radius: 10rpx;
+      margin-left: 20rpx;
+      width: 30%;
+      top: 12rpx;
+      margin-bottom: 10rpx;
+      height: 60rpx;
+      background-color: #007aff;
+      line-height: 60rpx;
+      text-align: center;
+      color: whitesmoke;
+    }
   }
 
   .charts-box-fan {
     background-color: white;
     height: 600rpx;
-  }
-
-  .my-select {
-    position: relative;
-    border-radius: 10rpx;
-    margin-left: 20rpx;
-    width: 30%;
-    top: 12rpx;
-    margin-bottom: 10rpx;
-    height: 60rpx;
-    background-color: #007aff;
-    line-height: 60rpx;
-    text-align: center;
-    color: whitesmoke;
   }
 
   .my-select-year {

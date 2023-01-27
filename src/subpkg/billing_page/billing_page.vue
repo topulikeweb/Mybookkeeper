@@ -202,7 +202,11 @@ export default {
   },
   methods: {
     ...mapMutations('m_list', ['updateTimeList']),
-    // 顶部tab栏切换
+    /**
+     * @Description: 顶部tab栏切换触发
+     * @author topu
+     * @date 2023/1/16
+     */
     changeTab (index) {
       this.current = index;
       this.swiperCurrent = index
@@ -213,7 +217,14 @@ export default {
     showIncomePicker () {
       this.showKeyBoardFlag = true;
     },
-    // 类别选择器改变(将内容改变为选择的类型)
+
+    /**
+     * @author topu
+     * @date 2023/1/16
+     * @Description
+     * @param {type} [param] 点击账户的信息详情
+     * @return 返回值
+    */
     onTypeChange (e) {// 账户类型
       this.accountIndex = e.detail.value
       this.costForm.AccountType = this.Account

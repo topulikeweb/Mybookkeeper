@@ -112,7 +112,10 @@ export default {
     changeType (e) {
       this.theResult.typeResult = this.typeRange[e]
     },
-    // 将timeList的时间以键值对的形式添加到timeRange中
+    /**
+     * 将timeList的时间以键值对的形式添加到timeRange中
+     *
+     */
     addTimeRange () {
       // 先对记账时间进行排序
       this.sortTime()
@@ -124,7 +127,9 @@ export default {
         this.timeRange.push(obj)
       }
     },
-    // 给记账时间进行排序
+    /**
+     *  给记账时间进行排序
+     */
     sortTime () {
       // 将时间转换为毫秒来比较进行排序
       this.timeList.sort((a, b) => {
@@ -134,7 +139,10 @@ export default {
       this.updateTimeList(this.timeList)
       console.log(12312, this.timeList)
     },
-    // 点击滑块的删除按钮,删除对应的li
+    /**
+     * 点击滑块的删除按钮,删除对应的li
+     * @param key(点击滑块的索引)
+     */
     onClick (key) {
       // TODO 删除的接口
 
@@ -194,14 +202,14 @@ export default {
     justify-content: space-between;
 
     ::v-deep .data-v-5f3cdb66 {
-      font-size: 30rpx;
+      font-size: 30 rpx;
       display: flex;
       justify-content: space-between;
       width: 75%;
 
       .text {
-        width: 80rpx;
-        line-height: 65rpx;
+        width: 80 rpx;
+        line-height: 65 rpx;
       }
     }
   }
