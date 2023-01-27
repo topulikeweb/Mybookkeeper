@@ -4,7 +4,7 @@
     <v-tabs v-model="current" :tabs="tabs" @change="changeTab"
             :scroll="false"></v-tabs>
 
-    <swiper :current="current" class="swiper">
+    <swiper :current="current" class="swiper" @change="changeSwiper">
       <swiper-item class="swiper">
         <!--        折线图-->
         <view class="charts-box">
@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 
 export default {
   data () {
@@ -187,6 +187,11 @@ export default {
     }
   },
   onShow () {
+<<<<<<< HEAD
+=======
+    this.tokenLister()
+    // 获取所有账单的月份
+>>>>>>> 623404e783e30fbddf78ddae9a99cf6dc120c9f6
     this.getTimeList()
     this.getServerData();
     this.getYearMoneyArray()
@@ -199,6 +204,11 @@ export default {
     ...mapState('m_list', ['timeList'])
   },
   methods: {
+    ...mapMutations('m_user', ['tokenLister']),
+    // 改轮播图是调用，将轮播图的索引赋值给tab栏，让用户滑动轮播图的时候，tab栏也会变化
+    changeSwiper (e) {
+      this.current = e.detail.current
+    },
     getServerData () {
       //模拟从服务器获取数据时的延时(这里就用后端接口了，页面处理逻辑就行)
       setTimeout(() => {
@@ -264,44 +274,44 @@ export default {
           // console.log(12, calendar_month)
           if (item.flag === 0) {
             // 强制转换为数字
-            item.SpendMoney = parseInt(item.SpendMoney)
+            item.spendMoney = parseInt(item.spendMoney)
             // 根据月份来进行加减
             switch (calendar_month) {
               case '01':
-                this.spendMoneyArray[0] = item.SpendMoney + this.spendMoneyArray[0]
+                this.spendMoneyArray[0] = item.spendMoney + this.spendMoneyArray[0]
                 break;
               case '02':
-                this.spendMoneyArray[1] = item.SpendMoney + this.spendMoneyArray[1]
+                this.spendMoneyArray[1] = item.spendMoney + this.spendMoneyArray[1]
                 break;
               case '03':
-                this.spendMoneyArray[2] = item.SpendMoney + this.spendMoneyArray[2]
+                this.spendMoneyArray[2] = item.spendMoney + this.spendMoneyArray[2]
                 break;
               case '04':
-                this.spendMoneyArray[3] = item.SpendMoney + this.spendMoneyArray[3]
+                this.spendMoneyArray[3] = item.spendMoney + this.spendMoneyArray[3]
                 break;
               case '05':
-                this.spendMoneyArray[4] = item.SpendMoney + this.spendMoneyArray[4]
+                this.spendMoneyArray[4] = item.spendMoney + this.spendMoneyArray[4]
                 break;
               case '06':
-                this.spendMoneyArray[5] = item.SpendMoney + this.spendMoneyArray[5]
+                this.spendMoneyArray[5] = item.spendMoney + this.spendMoneyArray[5]
                 break;
               case '07':
-                this.spendMoneyArray[6] = item.SpendMoney + this.spendMoneyArray[6]
+                this.spendMoneyArray[6] = item.spendMoney + this.spendMoneyArray[6]
                 break;
               case '08':
-                this.spendMoneyArray[7] = item.SpendMoney + this.spendMoneyArray[7]
+                this.spendMoneyArray[7] = item.spendMoney + this.spendMoneyArray[7]
                 break;
               case '09':
-                this.spendMoneyArray[8] = item.SpendMoney + this.spendMoneyArray[8]
+                this.spendMoneyArray[8] = item.spendMoney + this.spendMoneyArray[8]
                 break;
               case '10':
-                this.spendMoneyArray[9] = item.SpendMoney + this.spendMoneyArray[9]
+                this.spendMoneyArray[9] = item.spendMoney + this.spendMoneyArray[9]
                 break;
               case '11':
-                this.spendMoneyArray[10] = item.SpendMoney + this.spendMoneyArray[10]
+                this.spendMoneyArray[10] = item.spendMoney + this.spendMoneyArray[10]
                 break;
               case '12':
-                this.spendMoneyArray[11] = item.SpendMoney + this.spendMoneyArray[11]
+                this.spendMoneyArray[11] = item.spendMoney + this.spendMoneyArray[11]
                 break;
             }
           }
@@ -315,44 +325,44 @@ export default {
           // console.log(12, calendar_month)
           if (item.flag === 1) {
             // 强制转换为数字
-            item.SpendMoney = parseInt(item.SpendMoney)
+            item.spendMoney = parseInt(item.spendMoney)
             // 根据消费月份来进行相同月份账单的求和
             switch (calendar_month) {
               case '01':
-                this.incomeMoneyArray[0] = item.SpendMoney + this.incomeMoneyArray[0]
+                this.incomeMoneyArray[0] = item.spendMoney + this.incomeMoneyArray[0]
                 break;
               case '02':
-                this.incomeMoneyArray[1] = item.SpendMoney + this.incomeMoneyArray[1]
+                this.incomeMoneyArray[1] = item.spendMoney + this.incomeMoneyArray[1]
                 break;
               case '03':
-                this.incomeMoneyArray[2] = item.SpendMoney + this.incomeMoneyArray[2]
+                this.incomeMoneyArray[2] = item.spendMoney + this.incomeMoneyArray[2]
                 break;
               case '04':
-                this.incomeMoneyArray[3] = item.SpendMoney + this.incomeMoneyArray[3]
+                this.incomeMoneyArray[3] = item.spendMoney + this.incomeMoneyArray[3]
                 break;
               case '05':
-                this.incomeMoneyArray[4] = item.SpendMoney + this.incomeMoneyArray[4]
+                this.incomeMoneyArray[4] = item.spendMoney + this.incomeMoneyArray[4]
                 break;
               case '06':
-                this.incomeMoneyArray[5] = item.SpendMoney + this.incomeMoneyArray[5]
+                this.incomeMoneyArray[5] = item.spendMoney + this.incomeMoneyArray[5]
                 break;
               case '07':
-                this.incomeMoneyArray[6] = item.SpendMoney + this.incomeMoneyArray[6]
+                this.incomeMoneyArray[6] = item.spendMoney + this.incomeMoneyArray[6]
                 break;
               case '08':
-                this.incomeMoneyArray[7] = item.SpendMoney + this.incomeMoneyArray[7]
+                this.incomeMoneyArray[7] = item.spendMoney + this.incomeMoneyArray[7]
                 break;
               case '09':
-                this.incomeMoneyArray[8] = item.SpendMoney + this.incomeMoneyArray[8]
+                this.incomeMoneyArray[8] = item.spendMoney + this.incomeMoneyArray[8]
                 break;
               case '10':
-                this.incomeMoneyArray[9] = item.SpendMoney + this.incomeMoneyArray[9]
+                this.incomeMoneyArray[9] = item.spendMoney + this.incomeMoneyArray[9]
                 break;
               case '11':
-                this.incomeMoneyArray[10] = item.SpendMoney + this.incomeMoneyArray[10]
+                this.incomeMoneyArray[10] = item.spendMoney + this.incomeMoneyArray[10]
                 break;
               case '12':
-                this.incomeMoneyArray[11] = item.SpendMoney + this.incomeMoneyArray[11]
+                this.incomeMoneyArray[11] = item.spendMoney + this.incomeMoneyArray[11]
                 break;
             }
           }
@@ -381,13 +391,13 @@ export default {
             if (parseInt(item.calendar.substring(10, 6).trim()) === parseInt(this.monthText.substring(7, 5).trim())) {
               // 将天数作为索引
               let index = parseInt(item.calendar.split(' - ')[2])
-              this.monthSpendMoneyArray[index - 1] = this.monthSpendMoneyArray[index - 1] + item.SpendMoney
+              this.monthSpendMoneyArray[index - 1] = this.monthSpendMoneyArray[index - 1] + item.spendMoney
             }
           } else {// 判断为收入
             if (parseInt(item.calendar.substring(10, 6).trim()) === parseInt(this.monthText.substring(7, 5).trim())) {
               // 将天数作为索引
               let index = parseInt(item.calendar.split(' - ')[2])
-              this.monthIncomeMoneyArray[index] = this.monthIncomeMoneyArray[index] + item.SpendMoney
+              this.monthIncomeMoneyArray[index] = this.monthIncomeMoneyArray[index] + item.spendMoney
             }
           }
         }
@@ -413,22 +423,22 @@ export default {
             if (changeMonth === this.monthText.substring(7, 5).trim()) {
               switch (item.spendType) {
                 case '餐饮':
-                  fanData[0] = fanData[0] + item.SpendMoney
+                  fanData[0] = fanData[0] + item.spendMoney
                   break;
                 case '出行':
-                  fanData[1] = fanData[1] + item.SpendMoney
+                  fanData[1] = fanData[1] + item.spendMoney
                   break;
                 case '娱乐':
-                  fanData[2] = fanData[2] + item.SpendMoney
+                  fanData[2] = fanData[2] + item.spendMoney
                   break;
                 case '学习':
-                  fanData[3] = fanData[3] + item.SpendMoney
+                  fanData[3] = fanData[3] + item.spendMoney
                   break;
                 case '日用品':
-                  fanData[4] = fanData[4] + item.SpendMoney
+                  fanData[4] = fanData[4] + item.spendMoney
                   break;
                 case '其他':
-                  fanData[5] = fanData[5] + item.SpendMoney
+                  fanData[5] = fanData[5] + item.spendMoney
                   break;
               }
             }
@@ -469,22 +479,22 @@ export default {
         if (parseInt(item.calendar.split(' - ')[0]) === parseInt(this.yearText)) {
           switch (item.spendType) {
             case '餐饮':
-              fanData[0] = fanData[0] + item.SpendMoney
+              fanData[0] = fanData[0] + item.spendMoney
               break;
             case '出行':
-              fanData[1] = fanData[1] + item.SpendMoney
+              fanData[1] = fanData[1] + item.spendMoney
               break;
             case '娱乐':
-              fanData[2] = fanData[2] + item.SpendMoney
+              fanData[2] = fanData[2] + item.spendMoney
               break;
             case '学习':
-              fanData[3] = fanData[3] + item.SpendMoney
+              fanData[3] = fanData[3] + item.spendMoney
               break;
             case '日用品':
-              fanData[4] = fanData[4] + item.SpendMoney
+              fanData[4] = fanData[4] + item.spendMoney
               break;
             case '其他':
-              fanData[5] = fanData[5] + item.SpendMoney
+              fanData[5] = fanData[5] + item.spendMoney
               break;
           }
         }
@@ -563,7 +573,7 @@ export default {
         }
       }
     }
-  }
+  },
 };
 </script>
 

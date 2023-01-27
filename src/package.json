@@ -1,14 +1,10 @@
 {
-    "id": "active-form",
-    "displayName": "表单 动态表单 uniapp最强动态表单 表单校验 快速生成表单 全端支持",
-    "version": "2.1.6",
-    "description": "基于uview2.0 最强动态表单 以js的方式快速生成表单接口 支持表单校验    ui设计师样式优化",
+    "id": "we-datePicker",
+    "displayName": "滚动选择日期",
+    "version": "1.0.0",
+    "description": "一个基于picker-view封装的选择日期的小组件",
     "keywords": [
-        "uview2.0表单",
-        "动态表单",
-        "表单校验",
-        "快速生成表单",
-        "全端"
+        "datePicker，picker-view，日期，时间"
     ],
     "dcloudext": {
         "category": [
